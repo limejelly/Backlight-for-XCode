@@ -1,4 +1,4 @@
-Backlight
+Backlight for XCode
 =========
 
 Highlights the current editing line in Xcode
