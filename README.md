@@ -9,3 +9,7 @@ Installing:
 
 1. Build with XCode
 2. Restart XCode
+
+Usage:
+
+You can enable plugin by selecting menu Edit->Line backlight.
