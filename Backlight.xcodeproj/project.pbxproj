@@ -1,0 +1,290 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2206888618F5A7D00008414D /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2206888518F5A7D00008414D /* AppKit.framework */; };
+		2206888818F5A7D00008414D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2206888718F5A7D00008414D /* Foundation.framework */; };
+		2206888E18F5A7D00008414D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2206888C18F5A7D00008414D /* InfoPlist.strings */; };
+		2206889118F5A7D00008414D /* AAABacklight.m in Sources */ = {isa = PBXBuildFile; fileRef = 2206889018F5A7D00008414D /* AAABacklight.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		2206888218F5A7D00008414D /* Backlight.xcplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Backlight.xcplugin; sourceTree = BUILT_PRODUCTS_DIR; };
+		2206888518F5A7D00008414D /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		2206888718F5A7D00008414D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		2206888B18F5A7D00008414D /* Backlight-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Backlight-Info.plist"; sourceTree = "<group>"; };
+		2206888D18F5A7D00008414D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		2206888F18F5A7D00008414D /* AAABacklight.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AAABacklight.h; sourceTree = "<group>"; };
+		2206889018F5A7D00008414D /* AAABacklight.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AAABacklight.m; sourceTree = "<group>"; };
+		2206889218F5A7D00008414D /* Backlight-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Backlight-Prefix.pch"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2206887F18F5A7D00008414D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2206888618F5A7D00008414D /* AppKit.framework in Frameworks */,
+				2206888818F5A7D00008414D /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2206887918F5A7D00008414D = {
+			isa = PBXGroup;
+			children = (
+				2206888918F5A7D00008414D /* Backlight */,
+				2206888418F5A7D00008414D /* Frameworks */,
+				2206888318F5A7D00008414D /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		2206888318F5A7D00008414D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2206888218F5A7D00008414D /* Backlight.xcplugin */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2206888418F5A7D00008414D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2206888518F5A7D00008414D /* AppKit.framework */,
+				2206888718F5A7D00008414D /* Foundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		2206888918F5A7D00008414D /* Backlight */ = {
+			isa = PBXGroup;
+			children = (
+				2206888F18F5A7D00008414D /* AAABacklight.h */,
+				2206889018F5A7D00008414D /* AAABacklight.m */,
+				2206888A18F5A7D00008414D /* Supporting Files */,
+			);
+			path = Backlight;
+			sourceTree = "<group>";
+		};
+		2206888A18F5A7D00008414D /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				2206888B18F5A7D00008414D /* Backlight-Info.plist */,
+				2206888C18F5A7D00008414D /* InfoPlist.strings */,
+				2206889218F5A7D00008414D /* Backlight-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2206888118F5A7D00008414D /* Backlight */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2206889518F5A7D00008414D /* Build configuration list for PBXNativeTarget "Backlight" */;
+			buildPhases = (
+				2206887E18F5A7D00008414D /* Sources */,
+				2206887F18F5A7D00008414D /* Frameworks */,
+				2206888018F5A7D00008414D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Backlight;
+			productName = Backlight;
+			productReference = 2206888218F5A7D00008414D /* Backlight.xcplugin */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2206887A18F5A7D00008414D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = AAA;
+				LastUpgradeCheck = 0510;
+				ORGANIZATIONNAME = "Aliksandr Andrashuk";
+			};
+			buildConfigurationList = 2206887D18F5A7D00008414D /* Build configuration list for PBXProject "Backlight" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 2206887918F5A7D00008414D;
+			productRefGroup = 2206888318F5A7D00008414D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2206888118F5A7D00008414D /* Backlight */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		2206888018F5A7D00008414D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2206888E18F5A7D00008414D /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2206887E18F5A7D00008414D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2206889118F5A7D00008414D /* AAABacklight.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		2206888C18F5A7D00008414D /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2206888D18F5A7D00008414D /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		2206889318F5A7D00008414D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		2206889418F5A7D00008414D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		2206889618F5A7D00008414D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = "$(HOME)";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Backlight/Backlight-Prefix.pch";
+				INFOPLIST_FILE = "Backlight/Backlight-Info.plist";
+				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = xcplugin;
+			};
+			name = Debug;
+		};
+		2206889718F5A7D00008414D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = "$(HOME)";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Backlight/Backlight-Prefix.pch";
+				INFOPLIST_FILE = "Backlight/Backlight-Info.plist";
+				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = xcplugin;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2206887D18F5A7D00008414D /* Build configuration list for PBXProject "Backlight" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2206889318F5A7D00008414D /* Debug */,
+				2206889418F5A7D00008414D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2206889518F5A7D00008414D /* Build configuration list for PBXNativeTarget "Backlight" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2206889618F5A7D00008414D /* Debug */,
+				2206889718F5A7D00008414D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2206887A18F5A7D00008414D /* Project object */;
+}
