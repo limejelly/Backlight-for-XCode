@@ -11,6 +11,7 @@
 		2206888818F5A7D00008414D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2206888718F5A7D00008414D /* Foundation.framework */; };
 		2206888E18F5A7D00008414D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2206888C18F5A7D00008414D /* InfoPlist.strings */; };
 		2206889118F5A7D00008414D /* AAABacklight.m in Sources */ = {isa = PBXBuildFile; fileRef = 2206889018F5A7D00008414D /* AAABacklight.m */; };
+		2251BF9E18F5D64600DCFF4F /* AAABacklightView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2251BF9D18F5D64600DCFF4F /* AAABacklightView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,8 @@
 		2206888F18F5A7D00008414D /* AAABacklight.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AAABacklight.h; sourceTree = "<group>"; };
 		2206889018F5A7D00008414D /* AAABacklight.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AAABacklight.m; sourceTree = "<group>"; };
 		2206889218F5A7D00008414D /* Backlight-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Backlight-Prefix.pch"; sourceTree = "<group>"; };
+		2251BF9C18F5D64600DCFF4F /* AAABacklightView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AAABacklightView.h; sourceTree = "<group>"; };
+		2251BF9D18F5D64600DCFF4F /* AAABacklightView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AAABacklightView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +71,8 @@
 			children = (
 				2206888F18F5A7D00008414D /* AAABacklight.h */,
 				2206889018F5A7D00008414D /* AAABacklight.m */,
+				2251BF9C18F5D64600DCFF4F /* AAABacklightView.h */,
+				2251BF9D18F5D64600DCFF4F /* AAABacklightView.m */,
 				2206888A18F5A7D00008414D /* Supporting Files */,
 			);
 			path = Backlight;
@@ -146,6 +151,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2251BF9E18F5D64600DCFF4F /* AAABacklightView.m in Sources */,
 				2206889118F5A7D00008414D /* AAABacklight.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -242,6 +248,11 @@
 				DSTROOT = "$(HOME)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Backlight/Backlight-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"~/Sources/XCodePluginHeaders/**",
+				);
 				INFOPLIST_FILE = "Backlight/Backlight-Info.plist";
 				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -257,6 +268,11 @@
 				DSTROOT = "$(HOME)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Backlight/Backlight-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"~/Sources/XCodePluginHeaders/**",
+				);
 				INFOPLIST_FILE = "Backlight/Backlight-Info.plist";
 				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -283,6 +299,7 @@
 				2206889718F5A7D00008414D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
