@@ -54,7 +54,8 @@ static AAABacklight *sharedPlugin;
         [self createBacklight];
         [self adjustBacklight];
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textViewSelectionDidChanged:) name:NSTextViewDidChangeSelectionNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textViewDidChanged:) name:NSTextViewDidChangeSelectionNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textViewDidChanged:) name:NSTextDidChangeNotification object:nil];
     }
     return self;
 }
@@ -75,7 +76,7 @@ static AAABacklight *sharedPlugin;
     [self adjustBacklight];
 }
 
-- (void)textViewSelectionDidChanged:(NSNotification *)notification {
+- (void)textViewDidChanged:(NSNotification *)notification {
     
     if ([notification.object isKindOfClass:NSClassFromString(@"DVTSourceTextView")]) {
         _textView = notification.object;
