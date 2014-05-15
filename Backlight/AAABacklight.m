@@ -10,6 +10,7 @@
 #import "AAABacklightView.h"
 
 static NSString *const kAAAEnableLineBacklightKey = @"kAAAEnableLineBacklightKey";
+static NSString *const kAAALineBacklightColorKey = @"kAAALineBacklightColorKey";
 
 static AAABacklight *sharedPlugin;
 
@@ -49,6 +50,10 @@ static AAABacklight *sharedPlugin;
             [actionMenuItem setTarget:self];
             [[menuItem submenu] addItem:actionMenuItem];
             _controlMenuItem = actionMenuItem;
+			
+            NSMenuItem *editMenuItem = [[NSMenuItem alloc] initWithTitle:@"Edit line backlight color" action:@selector(showColorPanel) keyEquivalent:@""];
+            [editMenuItem setTarget:self];
+            [[menuItem submenu] addItem:editMenuItem];
         }
         
         [self createBacklight];
@@ -74,6 +79,27 @@ static AAABacklight *sharedPlugin;
     [[NSUserDefaults standardUserDefaults] setBool:!self.isBacklightEnabled forKey:kAAAEnableLineBacklightKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
     [self adjustBacklight];
+}
+
+- (void)showColorPanel {
+	
+	NSColorPanel *panel = [NSColorPanel sharedColorPanel];
+	[panel setTarget:self];
+	[panel setAction:@selector(adjustColor:)];
+	[panel orderFront:nil];
+}
+
+- (void)adjustColor:(id)sender {
+
+	NSColorPanel *panel = (NSColorPanel *)sender;
+	if (panel.color) {
+		
+		_currentBacklightView.backlightColor = panel.color;
+		
+		NSData *colorData = [NSArchiver archivedDataWithRootObject:panel.color];
+		[[NSUserDefaults standardUserDefaults] setObject:colorData forKey:kAAALineBacklightColorKey];
+		[[NSUserDefaults standardUserDefaults] synchronize];
+	}
 }
 
 - (void)textViewDidChanged:(NSNotification *)notification {
@@ -119,6 +145,13 @@ static AAABacklight *sharedPlugin;
 - (void)createBacklight {
     _currentBacklightView = [[AAABacklightView alloc] initWithFrame:NSZeroRect];
     _currentBacklightView.autoresizingMask = NSViewWidthSizable;
+	
+	NSData *colorData = [[NSUserDefaults standardUserDefaults] dataForKey:kAAALineBacklightColorKey];
+	if (colorData != nil) {
+	
+		NSColor *color = (NSColor *)[NSUnarchiver unarchiveObjectWithData:colorData];
+		_currentBacklightView.backlightColor = color;
+	}
 }
 
 - (void)adjustBacklight {

@@ -10,4 +10,6 @@
 
 @interface AAABacklightView : NSView
 
+@property (nonatomic, strong) NSColor *backlightColor;
+
 @end
