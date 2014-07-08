@@ -13,9 +13,20 @@
 - (void)drawRect:(NSRect)dirtyRect
 {
     [super drawRect:dirtyRect];
-    
-    [[[NSColor alternateSelectedControlColor] colorWithAlphaComponent:0.2] setFill];
+	
+	NSColor *color = self.backlightColor;
+	if (color == nil) {
+
+		color = [NSColor alternateSelectedControlColor];
+	}
+    [[color colorWithAlphaComponent:0.2] setFill];
     NSRectFillUsingOperation(dirtyRect, NSCompositeSourceOver);
+}
+
+- (void)setBacklightColor:(NSColor *)backlightColor {
+	
+	_backlightColor = backlightColor;
+	[self setNeedsDisplay:YES];
 }
 
 @end
