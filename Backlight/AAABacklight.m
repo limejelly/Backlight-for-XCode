@@ -103,7 +103,7 @@ static AAABacklight *sharedPlugin;
 }
 
 - (void)textViewDidChanged:(NSNotification *)notification {
-    
+
     if ([notification.object isKindOfClass:NSClassFromString(@"DVTSourceTextView")]) {
         _textView = notification.object;
         
@@ -117,7 +117,7 @@ static AAABacklight *sharedPlugin;
 }
 
 - (void)moveBacklightInTextView:(NSTextView *)textView {
-    if (!textView) {
+    if (!textView || [[NSApp keyWindow] firstResponder] != textView) {
         return;
     }
     
