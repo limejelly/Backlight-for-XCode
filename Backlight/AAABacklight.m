@@ -92,7 +92,7 @@ static AAABacklight *sharedPlugin;
 - (void)adjustColor:(id)sender {
 
 	NSColorPanel *panel = (NSColorPanel *)sender;
-	if (panel.color) {
+	if (panel.color && [[NSApp keyWindow] firstResponder] == _textView) {
 		
 		_currentBacklightView.backlightColor = panel.color;
 		
@@ -126,7 +126,7 @@ static AAABacklight *sharedPlugin;
     [_currentBacklightView removeFromSuperview];
     
     if (selectedRange.length == 0) {
-        NSRect rectInScreen = [textView firstRectForCharacterRange:selectedRange];
+        NSRect rectInScreen = [textView firstRectForCharacterRange:selectedRange actualRange:NULL];
         NSRect rectInWindow = [textView.window convertRectFromScreen:rectInScreen];
         NSRect rectInView = [textView convertRect:rectInWindow fromView:nil];
         
