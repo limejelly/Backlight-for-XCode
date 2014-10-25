@@ -8,25 +8,26 @@
 
 #import "AAABacklightView.h"
 
+static CGFloat AAABacklightViewPadding = 2.5f;
+static CGFloat AAABacklightViewRadius = 4.0f;
+
 @implementation AAABacklightView
 
 - (void)drawRect:(NSRect)dirtyRect
 {
     [super drawRect:dirtyRect];
 
-    CGFloat padding = 2.5f;
-    CGFloat radius = 4.0f;
-
     NSRect rect = dirtyRect;
-    rect.size.width -= (padding * 2);
-    rect.origin.x += padding;
+    rect.size.width -= AAABacklightViewPadding * 2;
+    rect.origin.x   += AAABacklightViewPadding;
 
     NSColor *color = (self.backlightColor) ?: [NSColor alternateSelectedControlColor];
     [[color colorWithAlphaComponent:0.2] setFill];
 
     [NSBezierPath setDefaultLineWidth:1.0];
     NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:rect
-                                                         xRadius:radius yRadius:radius];
+                                                         xRadius:AAABacklightViewRadius
+                                                         yRadius:AAABacklightViewRadius];
 
     [[color colorWithAlphaComponent:0.2] set];
     [path fill];
