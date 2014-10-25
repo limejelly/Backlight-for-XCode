@@ -17,19 +17,16 @@ static CGFloat AAABacklightViewRadius = 4.0f;
 {
     [super drawRect:dirtyRect];
 
-    NSRect rect = dirtyRect;
-    rect.size.width -= AAABacklightViewPadding * 2;
-    rect.origin.x   += AAABacklightViewPadding;
+    dirtyRect.size.width -= AAABacklightViewPadding * 2;
+    dirtyRect.origin.x   += AAABacklightViewPadding;
 
     NSColor *color = (self.backlightColor) ?: [NSColor alternateSelectedControlColor];
-    [[color colorWithAlphaComponent:0.2] setFill];
+    [[color colorWithAlphaComponent:0.2] set];
 
-    [NSBezierPath setDefaultLineWidth:1.0];
-    NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:rect
+    NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:dirtyRect
                                                          xRadius:AAABacklightViewRadius
                                                          yRadius:AAABacklightViewRadius];
-
-    [[color colorWithAlphaComponent:0.2] set];
+    [path setLineWidth:1.0f];
     [path fill];
 }
 
