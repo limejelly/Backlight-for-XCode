@@ -104,6 +104,8 @@ static AAABacklight *sharedPlugin;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+#pragma mark - Getters
+
 - (BOOL)isBacklightEnabled
 {
     return [[NSUserDefaults standardUserDefaults] boolForKey:kAAAEnableLineBacklightKey];
@@ -129,6 +131,8 @@ static AAABacklight *sharedPlugin;
     _alwaysEnabledControlMenuItem.state = (self.isAlwaysEnabled) ? NSOnState : NSOffState;
 }
 
+#pragma mark - Actions
+
 - (void)showColorPanel
 {
 	NSColorPanel *panel = [NSColorPanel sharedColorPanel];
@@ -150,6 +154,8 @@ static AAABacklight *sharedPlugin;
 	}
 }
 
+#pragma mark - Notifications
+
 - (void)textViewDidChanged:(NSNotification *)notification
 {
     if ([notification.object isKindOfClass:NSClassFromString(@"DVTSourceTextView")]) {
@@ -162,6 +168,8 @@ static AAABacklight *sharedPlugin;
         [_currentBacklightView removeFromSuperview];
     }
 }
+
+#pragma mark - Private methods
 
 - (void)moveBacklightInTextView:(NSTextView *)textView
 {
