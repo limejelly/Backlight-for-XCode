@@ -185,7 +185,7 @@ static AAABacklight *sharedPlugin;
 
     NSRect rectInScreen = [textView firstRectForCharacterRange:selectedRange actualRange:NULL];
     NSRect rectInWindow = [textView.window convertRectFromScreen:rectInScreen];
-    NSRect rectInView = [textView convertRect:rectInWindow fromView:nil];
+    NSRect rectInView   = [textView convertRect:rectInWindow fromView:nil];
 
     NSRect backlightRect = rectInView;
     backlightRect.origin.x = 0;
