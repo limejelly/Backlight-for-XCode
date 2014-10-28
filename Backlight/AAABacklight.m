@@ -41,19 +41,39 @@ static AAABacklight *sharedPlugin;
 {
     if (self = [super init]) {
         self.bundle = plugin;
-        
-        NSMenuItem *menuItem = [[NSApp mainMenu] itemWithTitle:@"Edit"];
-        
-        if (menuItem) {
-            [[menuItem submenu] addItem:[NSMenuItem separatorItem]];
-            NSMenuItem *actionMenuItem = [[NSMenuItem alloc] initWithTitle:@"Line backlight" action:@selector(toggleEnableLineBacklight) keyEquivalent:@""];
-            [actionMenuItem setTarget:self];
-            [[menuItem submenu] addItem:actionMenuItem];
-            _controlMenuItem = actionMenuItem;
-			
-            NSMenuItem *editMenuItem = [[NSMenuItem alloc] initWithTitle:@"Edit line backlight color" action:@selector(showColorPanel) keyEquivalent:@""];
-            [editMenuItem setTarget:self];
-            [[menuItem submenu] addItem:editMenuItem];
+
+        NSMenuItem *editMenuItem = [[NSApp mainMenu] itemWithTitle:@"Edit"];
+
+        if (editMenuItem) {
+            NSMenu *backlightMenu = [[NSMenu alloc] initWithTitle:@"Backlight"];
+            [[editMenuItem submenu] addItem:[NSMenuItem separatorItem]];
+
+            [backlightMenu addItem:({
+                NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:@"Line backlight"
+                                                                  action:@selector(toggleEnableLineBacklight)
+                                                           keyEquivalent:@""];
+                menuItem.target = self;
+                menuItem.keyEquivalentModifierMask = NSControlKeyMask | NSShiftKeyMask;
+                _controlMenuItem = menuItem;
+                menuItem;
+            })];
+
+            [backlightMenu addItem:({
+                NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:@"Edit line backlight color"
+                                                                  action:@selector(showColorPanel)
+                                                           keyEquivalent:@""];
+                menuItem.target = self;
+                menuItem.keyEquivalentModifierMask = NSControlKeyMask | NSShiftKeyMask;
+                menuItem;
+            })];
+
+            NSString *versionString = [[NSBundle bundleForClass:[self class]] objectForInfoDictionaryKey:@"CFBundleVersion"];
+            NSMenuItem *backlightMenuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"Backlight (%@)", versionString]
+                                                                    action:nil
+                                                             keyEquivalent:@""];
+            backlightMenuItem.submenu = backlightMenu;
+
+            [[editMenuItem submenu] addItem:backlightMenuItem];
         }
         
         [self createBacklight];
