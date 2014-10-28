@@ -10,6 +10,7 @@
 #import "AAABacklightView.h"
 
 static NSString *const kAAAEnableLineBacklightKey = @"kAAAEnableLineBacklightKey";
+static NSString *const kAAAAlwaysEnableLineBacklightKey = @"kAAAAlwaysEnableLineBacklightKey";
 static NSString *const kAAALineBacklightColorKey = @"kAAALineBacklightColorKey";
 
 static AAABacklight *sharedPlugin;
@@ -17,11 +18,13 @@ static AAABacklight *sharedPlugin;
 @interface AAABacklight()
 @property (nonatomic, strong) NSBundle *bundle;
 @property (readonly) BOOL isBacklightEnabled;
+@property (readonly) BOOL isAlwaysEnabled;
 @end
 
 @implementation AAABacklight {
     AAABacklightView *_currentBacklightView;
-    NSMenuItem *_controlMenuItem;
+    NSMenuItem *_enabledControlMenuItem;
+    NSMenuItem *_alwaysEnabledControlMenuItem;
     NSTextView *_textView;
 }
 
@@ -53,7 +56,7 @@ static AAABacklight *sharedPlugin;
                                                                   action:@selector(toggleEnableLineBacklight)
                                                            keyEquivalent:@""];
                 menuItem.target = self;
-                _controlMenuItem = menuItem;
+                _enabledControlMenuItem = menuItem;
                 menuItem;
             })];
 
@@ -62,6 +65,15 @@ static AAABacklight *sharedPlugin;
                                                                   action:@selector(showColorPanel)
                                                            keyEquivalent:@""];
                 menuItem.target = self;
+                menuItem;
+            })];
+
+            [backlightMenu addItem:({
+                NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:@"Always highlight"
+                                                                  action:@selector(toggleAlwaysEnableBacklight)
+                                                           keyEquivalent:@""];
+                menuItem.target = self;
+                _alwaysEnabledControlMenuItem = menuItem;
                 menuItem;
             })];
 
@@ -76,6 +88,8 @@ static AAABacklight *sharedPlugin;
 
         [self createBacklight];
         [self adjustBacklight];
+
+        _alwaysEnabledControlMenuItem.state = (self.isAlwaysEnabled) ? NSOnState : NSOffState;
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textViewDidChanged:) name:NSTextViewDidChangeSelectionNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textViewDidChanged:) name:NSTextDidChangeNotification object:nil];
@@ -92,11 +106,24 @@ static AAABacklight *sharedPlugin;
     return [[NSUserDefaults standardUserDefaults] boolForKey:kAAAEnableLineBacklightKey];
 }
 
+- (BOOL)isAlwaysEnabled
+{
+    return [[NSUserDefaults standardUserDefaults] boolForKey:kAAAAlwaysEnableLineBacklightKey];
+}
+
 - (void)toggleEnableLineBacklight
 {
     [[NSUserDefaults standardUserDefaults] setBool:!self.isBacklightEnabled forKey:kAAAEnableLineBacklightKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
     [self adjustBacklight];
+}
+
+- (void)toggleAlwaysEnableBacklight
+{
+    [[NSUserDefaults standardUserDefaults] setBool:!self.isAlwaysEnabled forKey:kAAAAlwaysEnableLineBacklightKey];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+
+    _alwaysEnabledControlMenuItem.state = (self.isAlwaysEnabled) ? NSOnState : NSOffState;
 }
 
 - (void)showColorPanel {
@@ -143,21 +170,20 @@ static AAABacklight *sharedPlugin;
 
     [_currentBacklightView removeFromSuperview];
 
-    if (selectedRange.length == 0) {
-        NSRect rectInScreen = [textView firstRectForCharacterRange:selectedRange actualRange:NULL];
-        NSRect rectInWindow = [textView.window convertRectFromScreen:rectInScreen];
-        NSRect rectInView = [textView convertRect:rectInWindow fromView:nil];
+    if (selectedRange.length != 0 && !self.isAlwaysEnabled) return;
 
-        NSRect backlightRect = rectInView;
-        backlightRect.origin.x = 0;
-        backlightRect.size.width = textView.bounds.size.width;
-        _currentBacklightView.frame = backlightRect;
+    NSRect rectInScreen = [textView firstRectForCharacterRange:selectedRange actualRange:NULL];
+    NSRect rectInWindow = [textView.window convertRectFromScreen:rectInScreen];
+    NSRect rectInView = [textView convertRect:rectInWindow fromView:nil];
 
-        if (!_currentBacklightView.superview) {
-            [textView addSubview:_currentBacklightView];
-        }
+    NSRect backlightRect = rectInView;
+    backlightRect.origin.x = 0;
+    backlightRect.size.width = textView.bounds.size.width;
+    _currentBacklightView.frame = backlightRect;
+
+    if (!_currentBacklightView.superview) {
+        [textView addSubview:_currentBacklightView];
     }
-
 }
 
 - (void)createBacklight {
@@ -174,12 +200,12 @@ static AAABacklight *sharedPlugin;
 
 - (void)adjustBacklight {
     if (self.isBacklightEnabled) {
-        [_controlMenuItem setState:NSOnState];
+        [_enabledControlMenuItem setState:NSOnState];
         [self moveBacklightInTextView:_textView];
     }
     else {
         [_currentBacklightView removeFromSuperview];
-        [_controlMenuItem setState:NSOffState];
+        [_enabledControlMenuItem setState:NSOffState];
     }
 }
 
