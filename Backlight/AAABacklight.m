@@ -53,7 +53,6 @@ static AAABacklight *sharedPlugin;
                                                                   action:@selector(toggleEnableLineBacklight)
                                                            keyEquivalent:@""];
                 menuItem.target = self;
-                menuItem.keyEquivalentModifierMask = NSControlKeyMask | NSShiftKeyMask;
                 _controlMenuItem = menuItem;
                 menuItem;
             })];
@@ -63,7 +62,6 @@ static AAABacklight *sharedPlugin;
                                                                   action:@selector(showColorPanel)
                                                            keyEquivalent:@""];
                 menuItem.target = self;
-                menuItem.keyEquivalentModifierMask = NSControlKeyMask | NSShiftKeyMask;
                 menuItem;
             })];
 
