@@ -61,19 +61,19 @@ static AAABacklight *sharedPlugin;
             })];
 
             [backlightMenu addItem:({
-                NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:@"Edit line backlight color"
-                                                                  action:@selector(showColorPanel)
-                                                           keyEquivalent:@""];
-                menuItem.target = self;
-                menuItem;
-            })];
-
-            [backlightMenu addItem:({
-                NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:@"Always highlight"
+                NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:@"Always backlight"
                                                                   action:@selector(toggleAlwaysEnableBacklight)
                                                            keyEquivalent:@""];
                 menuItem.target = self;
                 _alwaysEnabledControlMenuItem = menuItem;
+                menuItem;
+            })];
+
+            [backlightMenu addItem:({
+                NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:@"Edit line backlight color"
+                                                                  action:@selector(showColorPanel)
+                                                           keyEquivalent:@""];
+                menuItem.target = self;
                 menuItem;
             })];
 
