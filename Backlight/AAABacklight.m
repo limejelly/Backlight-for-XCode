@@ -75,10 +75,10 @@ static AAABacklight *sharedPlugin;
 
             [[editMenuItem submenu] addItem:backlightMenuItem];
         }
-        
+
         [self createBacklight];
         [self adjustBacklight];
-        
+
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textViewDidChanged:) name:NSTextViewDidChangeSelectionNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textViewDidChanged:) name:NSTextDidChangeNotification object:nil];
     }
@@ -102,7 +102,7 @@ static AAABacklight *sharedPlugin;
 }
 
 - (void)showColorPanel {
-	
+
 	NSColorPanel *panel = [NSColorPanel sharedColorPanel];
 	[panel setTarget:self];
 	[panel setAction:@selector(adjustColor:)];
@@ -113,9 +113,9 @@ static AAABacklight *sharedPlugin;
 
 	NSColorPanel *panel = (NSColorPanel *)sender;
 	if (panel.color && [[NSApp keyWindow] firstResponder] == _textView) {
-		
+
 		_currentBacklightView.backlightColor = panel.color;
-		
+
 		NSData *colorData = [NSArchiver archivedDataWithRootObject:panel.color];
 		[[NSUserDefaults standardUserDefaults] setObject:colorData forKey:kAAALineBacklightColorKey];
 		[[NSUserDefaults standardUserDefaults] synchronize];
@@ -126,7 +126,7 @@ static AAABacklight *sharedPlugin;
 
     if ([notification.object isKindOfClass:NSClassFromString(@"DVTSourceTextView")]) {
         _textView = notification.object;
-        
+
         if ([[NSUserDefaults standardUserDefaults] boolForKey:kAAAEnableLineBacklightKey]) {
             [self moveBacklightInTextView:notification.object];
         }
@@ -140,21 +140,21 @@ static AAABacklight *sharedPlugin;
     if (!textView || [[NSApp keyWindow] firstResponder] != textView) {
         return;
     }
-    
+
     NSRange selectedRange = [textView selectedRange];
-    
+
     [_currentBacklightView removeFromSuperview];
-    
+
     if (selectedRange.length == 0) {
         NSRect rectInScreen = [textView firstRectForCharacterRange:selectedRange actualRange:NULL];
         NSRect rectInWindow = [textView.window convertRectFromScreen:rectInScreen];
         NSRect rectInView = [textView convertRect:rectInWindow fromView:nil];
-        
+
         NSRect backlightRect = rectInView;
         backlightRect.origin.x = 0;
         backlightRect.size.width = textView.bounds.size.width;
         _currentBacklightView.frame = backlightRect;
-        
+
         if (!_currentBacklightView.superview) {
             [textView addSubview:_currentBacklightView];
         }
@@ -165,10 +165,10 @@ static AAABacklight *sharedPlugin;
 - (void)createBacklight {
     _currentBacklightView = [[AAABacklightView alloc] initWithFrame:NSZeroRect];
     _currentBacklightView.autoresizingMask = NSViewWidthSizable;
-	
+
 	NSData *colorData = [[NSUserDefaults standardUserDefaults] dataForKey:kAAALineBacklightColorKey];
 	if (colorData != nil) {
-	
+
 		NSColor *color = (NSColor *)[NSUnarchiver unarchiveObjectWithData:colorData];
 		_currentBacklightView.backlightColor = color;
 	}
