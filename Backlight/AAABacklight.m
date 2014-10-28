@@ -42,58 +42,60 @@ static AAABacklight *sharedPlugin;
 
 - (id)initWithBundle:(NSBundle *)plugin
 {
-    if (self = [super init]) {
-        self.bundle = plugin;
+    self = [super init];
+    if (!self) return nil;
 
-        NSMenuItem *editMenuItem = [[NSApp mainMenu] itemWithTitle:@"Edit"];
+    self.bundle = plugin;
 
-        if (editMenuItem) {
-            NSMenu *backlightMenu = [[NSMenu alloc] initWithTitle:@"Backlight"];
-            [[editMenuItem submenu] addItem:[NSMenuItem separatorItem]];
+    NSMenuItem *editMenuItem = [[NSApp mainMenu] itemWithTitle:@"Edit"];
 
-            [backlightMenu addItem:({
-                NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:@"Line backlight"
-                                                                  action:@selector(toggleEnableLineBacklight)
-                                                           keyEquivalent:@""];
-                menuItem.target = self;
-                _enabledControlMenuItem = menuItem;
-                menuItem;
-            })];
+    if (editMenuItem) {
+        NSMenu *backlightMenu = [[NSMenu alloc] initWithTitle:@"Backlight"];
+        [[editMenuItem submenu] addItem:[NSMenuItem separatorItem]];
 
-            [backlightMenu addItem:({
-                NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:@"Always backlight"
-                                                                  action:@selector(toggleAlwaysEnableBacklight)
-                                                           keyEquivalent:@""];
-                menuItem.target = self;
-                _alwaysEnabledControlMenuItem = menuItem;
-                menuItem;
-            })];
+        [backlightMenu addItem:({
+            NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:@"Line backlight"
+                                                              action:@selector(toggleEnableLineBacklight)
+                                                       keyEquivalent:@""];
+            menuItem.target = self;
+            _enabledControlMenuItem = menuItem;
+            menuItem;
+        })];
 
-            [backlightMenu addItem:({
-                NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:@"Edit line backlight color"
-                                                                  action:@selector(showColorPanel)
-                                                           keyEquivalent:@""];
-                menuItem.target = self;
-                menuItem;
-            })];
+        [backlightMenu addItem:({
+            NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:@"Always backlight"
+                                                              action:@selector(toggleAlwaysEnableBacklight)
+                                                       keyEquivalent:@""];
+            menuItem.target = self;
+            _alwaysEnabledControlMenuItem = menuItem;
+            menuItem;
+        })];
 
-            NSString *versionString = [[NSBundle bundleForClass:[self class]] objectForInfoDictionaryKey:@"CFBundleVersion"];
-            NSMenuItem *backlightMenuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"Backlight (%@)", versionString]
-                                                                    action:nil
-                                                             keyEquivalent:@""];
-            backlightMenuItem.submenu = backlightMenu;
+        [backlightMenu addItem:({
+            NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:@"Edit line backlight color"
+                                                              action:@selector(showColorPanel)
+                                                       keyEquivalent:@""];
+            menuItem.target = self;
+            menuItem;
+        })];
 
-            [[editMenuItem submenu] addItem:backlightMenuItem];
-        }
+        NSString *versionString = [[NSBundle bundleForClass:[self class]] objectForInfoDictionaryKey:@"CFBundleVersion"];
+        NSMenuItem *backlightMenuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"Backlight (%@)", versionString]
+                                                                action:nil
+                                                         keyEquivalent:@""];
+        backlightMenuItem.submenu = backlightMenu;
 
-        [self createBacklight];
-        [self adjustBacklight];
-
-        _alwaysEnabledControlMenuItem.state = (self.isAlwaysEnabled) ? NSOnState : NSOffState;
-
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textViewDidChanged:) name:NSTextViewDidChangeSelectionNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textViewDidChanged:) name:NSTextDidChangeNotification object:nil];
+        [[editMenuItem submenu] addItem:backlightMenuItem];
     }
+
+    [self createBacklight];
+    [self adjustBacklight];
+
+    _alwaysEnabledControlMenuItem.state = (self.isAlwaysEnabled) ? NSOnState : NSOffState;
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textViewDidChanged:) name:NSTextViewDidChangeSelectionNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textViewDidChanged:) name:NSTextDidChangeNotification object:nil];
+
     return self;
 }
 
@@ -102,7 +104,8 @@ static AAABacklight *sharedPlugin;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (BOOL)isBacklightEnabled {
+- (BOOL)isBacklightEnabled
+{
     return [[NSUserDefaults standardUserDefaults] boolForKey:kAAAEnableLineBacklightKey];
 }
 
@@ -126,19 +129,19 @@ static AAABacklight *sharedPlugin;
     _alwaysEnabledControlMenuItem.state = (self.isAlwaysEnabled) ? NSOnState : NSOffState;
 }
 
-- (void)showColorPanel {
-
+- (void)showColorPanel
+{
 	NSColorPanel *panel = [NSColorPanel sharedColorPanel];
 	[panel setTarget:self];
 	[panel setAction:@selector(adjustColor:)];
 	[panel orderFront:nil];
 }
 
-- (void)adjustColor:(id)sender {
-
+- (void)adjustColor:(id)sender
+{
 	NSColorPanel *panel = (NSColorPanel *)sender;
-	if (panel.color && [[NSApp keyWindow] firstResponder] == _textView) {
 
+	if (panel.color && [[NSApp keyWindow] firstResponder] == _textView) {
 		_currentBacklightView.backlightColor = panel.color;
 
 		NSData *colorData = [NSArchiver archivedDataWithRootObject:panel.color];
@@ -147,21 +150,21 @@ static AAABacklight *sharedPlugin;
 	}
 }
 
-- (void)textViewDidChanged:(NSNotification *)notification {
-
+- (void)textViewDidChanged:(NSNotification *)notification
+{
     if ([notification.object isKindOfClass:NSClassFromString(@"DVTSourceTextView")]) {
         _textView = notification.object;
 
         if ([[NSUserDefaults standardUserDefaults] boolForKey:kAAAEnableLineBacklightKey]) {
             [self moveBacklightInTextView:notification.object];
         }
-    }
-    else {
+    } else {
         [_currentBacklightView removeFromSuperview];
     }
 }
 
-- (void)moveBacklightInTextView:(NSTextView *)textView {
+- (void)moveBacklightInTextView:(NSTextView *)textView
+{
     if (!textView || [[NSApp keyWindow] firstResponder] != textView) {
         return;
     }
@@ -186,24 +189,25 @@ static AAABacklight *sharedPlugin;
     }
 }
 
-- (void)createBacklight {
+- (void)createBacklight
+{
     _currentBacklightView = [[AAABacklightView alloc] initWithFrame:NSZeroRect];
     _currentBacklightView.autoresizingMask = NSViewWidthSizable;
 
 	NSData *colorData = [[NSUserDefaults standardUserDefaults] dataForKey:kAAALineBacklightColorKey];
-	if (colorData != nil) {
 
+	if (colorData != nil) {
 		NSColor *color = (NSColor *)[NSUnarchiver unarchiveObjectWithData:colorData];
 		_currentBacklightView.backlightColor = color;
 	}
 }
 
-- (void)adjustBacklight {
+- (void)adjustBacklight
+{
     if (self.isBacklightEnabled) {
         [_enabledControlMenuItem setState:NSOnState];
         [self moveBacklightInTextView:_textView];
-    }
-    else {
+    } else {
         [_currentBacklightView removeFromSuperview];
         [_enabledControlMenuItem setState:NSOffState];
     }
