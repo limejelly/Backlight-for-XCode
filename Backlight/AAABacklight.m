@@ -12,6 +12,7 @@
 static NSString *const kAAAEnableLineBacklightKey = @"kAAAEnableLineBacklightKey";
 static NSString *const kAAAAlwaysEnableLineBacklightKey = @"kAAAAlwaysEnableLineBacklightKey";
 static NSString *const kAAALineBacklightColorKey = @"kAAALineBacklightColorKey";
+static NSString *const kAAALineBacklightStrokeEnabledKey = @"kAAALineBacklightStrokeEnabledKey";
 
 static AAABacklight *sharedPlugin;
 
@@ -25,6 +26,7 @@ static AAABacklight *sharedPlugin;
     AAABacklightView *_currentBacklightView;
     NSMenuItem *_enabledControlMenuItem;
     NSMenuItem *_alwaysEnabledControlMenuItem;
+    NSMenuItem *_strokeControlMenuItem;
     NSTextView *_textView;
 }
 
@@ -72,6 +74,15 @@ static AAABacklight *sharedPlugin;
         })];
 
         [backlightMenu addItem:({
+            NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:@"Enable stroke"
+                                                              action:@selector(toggleStrokeBacklight)
+                                                       keyEquivalent:@""];
+            menuItem.target = self;
+            _strokeControlMenuItem = menuItem;
+            menuItem;
+        })];
+
+        [backlightMenu addItem:({
             NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:@"Edit line backlight color"
                                                               action:@selector(showColorPanel)
                                                        keyEquivalent:@""];
@@ -92,6 +103,8 @@ static AAABacklight *sharedPlugin;
     [self adjustBacklight];
 
     _alwaysEnabledControlMenuItem.state = (self.isAlwaysEnabled) ? NSOnState : NSOffState;
+    _strokeControlMenuItem.state = (self.isStrokeEnabled) ? NSOnState : NSOffState;
+    _currentBacklightView.strokeEnabled = self.isStrokeEnabled;
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowDidUpdate:) name:NSWindowDidUpdateNotification object:nil];
 
@@ -115,6 +128,11 @@ static AAABacklight *sharedPlugin;
     return [[NSUserDefaults standardUserDefaults] boolForKey:kAAAAlwaysEnableLineBacklightKey];
 }
 
+- (BOOL)isStrokeEnabled
+{
+    return [[NSUserDefaults standardUserDefaults] boolForKey:kAAALineBacklightStrokeEnabledKey];
+}
+
 - (void)toggleEnableLineBacklight
 {
     [[NSUserDefaults standardUserDefaults] setBool:!self.isBacklightEnabled forKey:kAAAEnableLineBacklightKey];
@@ -128,6 +146,15 @@ static AAABacklight *sharedPlugin;
     [[NSUserDefaults standardUserDefaults] synchronize];
 
     _alwaysEnabledControlMenuItem.state = (self.isAlwaysEnabled) ? NSOnState : NSOffState;
+}
+
+- (void)toggleStrokeBacklight
+{
+    [[NSUserDefaults standardUserDefaults] setBool:!self.isStrokeEnabled forKey:kAAALineBacklightStrokeEnabledKey];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+
+    _strokeControlMenuItem.state = (self.isStrokeEnabled) ? NSOnState : NSOffState;
+    _currentBacklightView.strokeEnabled = self.isStrokeEnabled;
 }
 
 #pragma mark - Actions

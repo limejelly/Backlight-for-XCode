@@ -27,8 +27,13 @@ static CGFloat AAABacklightViewRadius = 4.0f;
                                                          xRadius:AAABacklightViewRadius
                                                          yRadius:AAABacklightViewRadius];
 
-    path.lineWidth = 1.0f;
     [path fill];
+
+    if (self.strokeEnabled) {
+        path.lineWidth = 0.5f;
+        [[color colorWithAlphaComponent:0.8f] set];
+        [path stroke];
+    }
 }
 
 - (void)setBacklightColor:(NSColor *)backlightColor {

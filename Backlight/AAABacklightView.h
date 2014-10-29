@@ -11,5 +11,6 @@
 @interface AAABacklightView : NSView
 
 @property (nonatomic, strong) NSColor *backlightColor;
+@property (nonatomic) BOOL strokeEnabled;
 
 @end
