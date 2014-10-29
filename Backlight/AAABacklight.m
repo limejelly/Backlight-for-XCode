@@ -155,6 +155,7 @@ static AAABacklight *sharedPlugin;
 
     _strokeControlMenuItem.state = (self.isStrokeEnabled) ? NSOnState : NSOffState;
     _currentBacklightView.strokeEnabled = self.isStrokeEnabled;
+    [_currentBacklightView setNeedsDisplay:YES];
 }
 
 #pragma mark - Actions
