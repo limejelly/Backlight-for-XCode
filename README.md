@@ -12,5 +12,5 @@ Installing:
 
 Usage:
 
-You can enable plugin by selecting menu Edit->Line backlight.
-Also you can change the color of selection by choosing Edit->Edit line backlight color
+You can enable plugin by selecting menu Edit->Backlight->Line backlight.
+Also you can change the color of selection by choosing Edit->Backlight->Edit line backlight color
