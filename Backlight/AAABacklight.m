@@ -160,6 +160,8 @@ static AAABacklight *sharedPlugin;
     id firstResponder = [[NSApp keyWindow] firstResponder];
 
     if ([firstResponder isKindOfClass:NSClassFromString(@"DVTSourceTextView")]) {
+        _textView = firstResponder;
+
         if ([[NSUserDefaults standardUserDefaults] boolForKey:kAAAEnableLineBacklightKey]) {
             [self moveBacklightInTextView:firstResponder];
         } else {
