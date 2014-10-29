@@ -18,8 +18,6 @@ static AAABacklight *sharedPlugin;
 
 @interface AAABacklight()
 @property (nonatomic, strong) NSBundle *bundle;
-@property (readonly) BOOL isBacklightEnabled;
-@property (readonly) BOOL isAlwaysEnabled;
 @end
 
 @implementation AAABacklight {
