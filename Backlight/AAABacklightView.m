@@ -13,21 +13,27 @@ static CGFloat AAABacklightViewRadius = 4.0f;
 
 @implementation AAABacklightView
 
-- (void)drawRect:(NSRect)dirtyRect
+- (void)drawRect:(NSRect)rect
 {
-    [super drawRect:dirtyRect];
+    [super drawRect:rect];
 
-    dirtyRect.size.width -= AAABacklightViewPadding * 2;
-    dirtyRect.origin.x   += AAABacklightViewPadding;
+    rect.size.width -= AAABacklightViewPadding * 2.0f;
+    rect.origin.x   += AAABacklightViewPadding;
 
     NSColor *color = (self.backlightColor) ?: [NSColor alternateSelectedControlColor];
-    [[color colorWithAlphaComponent:0.2] set];
+    [[color colorWithAlphaComponent:0.2f] set];
 
-    NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:dirtyRect
+    NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:rect
                                                          xRadius:AAABacklightViewRadius
                                                          yRadius:AAABacklightViewRadius];
-    [path setLineWidth:1.0f];
+
     [path fill];
+
+    if (self.strokeEnabled) {
+        path.lineWidth = 0.5f;
+        [[color colorWithAlphaComponent:0.8f] set];
+        [path stroke];
+    }
 }
 
 - (void)setBacklightColor:(NSColor *)backlightColor {
