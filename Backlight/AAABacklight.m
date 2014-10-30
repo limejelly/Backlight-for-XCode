@@ -93,8 +93,7 @@ static AAABacklight *sharedPlugin;
 
     _alwaysEnabledControlMenuItem.state = (self.isAlwaysEnabled) ? NSOnState : NSOffState;
 
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textViewDidChanged:) name:NSTextViewDidChangeSelectionNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textViewDidChanged:) name:NSTextDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowDidUpdate:) name:NSWindowDidUpdateNotification object:nil];
 
     return self;
 }
@@ -156,16 +155,18 @@ static AAABacklight *sharedPlugin;
 
 #pragma mark - Notifications
 
-- (void)textViewDidChanged:(NSNotification *)notification
+- (void)windowDidUpdate:(NSNotification *)notification
 {
-    if ([notification.object isKindOfClass:NSClassFromString(@"DVTSourceTextView")]) {
-        _textView = notification.object;
+    id firstResponder = [[NSApp keyWindow] firstResponder];
+
+    if ([firstResponder isKindOfClass:NSClassFromString(@"DVTSourceTextView")]) {
+        _textView = firstResponder;
 
         if ([[NSUserDefaults standardUserDefaults] boolForKey:kAAAEnableLineBacklightKey]) {
-            [self moveBacklightInTextView:notification.object];
+            [self moveBacklightInTextView:firstResponder];
+        } else {
+            [_currentBacklightView removeFromSuperview];
         }
-    } else {
-        [_currentBacklightView removeFromSuperview];
     }
 }
 
