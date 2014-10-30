@@ -12,5 +12,6 @@
 
 @property (nonatomic, strong) NSColor *backlightColor;
 @property (nonatomic) BOOL strokeEnabled;
+@property (nonatomic) BOOL radiusEnabled;
 
 @end
