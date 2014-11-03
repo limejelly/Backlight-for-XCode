@@ -13,6 +13,7 @@ static NSString *const kAAAEnableLineBacklightKey = @"kAAAEnableLineBacklightKey
 static NSString *const kAAAAlwaysEnableLineBacklightKey = @"kAAAAlwaysEnableLineBacklightKey";
 static NSString *const kAAALineBacklightColorKey = @"kAAALineBacklightColorKey";
 static NSString *const kAAALineBacklightStrokeEnabledKey = @"kAAALineBacklightStrokeEnabledKey";
+static NSString *const kAAALineBacklightRadiusEnabledKey = @"kAAALineBacklightRadiusEnabledKey";
 
 static AAABacklight *sharedPlugin;
 
@@ -25,6 +26,7 @@ static AAABacklight *sharedPlugin;
     NSMenuItem *_enabledControlMenuItem;
     NSMenuItem *_alwaysEnabledControlMenuItem;
     NSMenuItem *_strokeControlMenuItem;
+    NSMenuItem *_radiusControlMenuItem;
     NSTextView *_textView;
 }
 
@@ -81,6 +83,15 @@ static AAABacklight *sharedPlugin;
         })];
 
         [backlightMenu addItem:({
+            NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:@"Enable round corners"
+                                                              action:@selector(toggleRadiusBacklight)
+                                                       keyEquivalent:@""];
+            menuItem.target = self;
+            _radiusControlMenuItem = menuItem;
+            menuItem;
+        })];
+
+        [backlightMenu addItem:({
             NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:@"Edit line backlight color"
                                                               action:@selector(showColorPanel)
                                                        keyEquivalent:@""];
@@ -102,9 +113,15 @@ static AAABacklight *sharedPlugin;
 
     _alwaysEnabledControlMenuItem.state = (self.isAlwaysEnabled) ? NSOnState : NSOffState;
     _strokeControlMenuItem.state = (self.isStrokeEnabled) ? NSOnState : NSOffState;
-    _currentBacklightView.strokeEnabled = self.isStrokeEnabled;
+    _radiusControlMenuItem.state = (self.isRadiusEnabled) ? NSOnState : NSOffState;
 
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowDidUpdate:) name:NSWindowDidUpdateNotification object:nil];
+    _currentBacklightView.strokeEnabled = self.isStrokeEnabled;
+    _currentBacklightView.radiusEnabled = self.isRadiusEnabled;
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(backlightNotification:) name:NSTextViewDidChangeSelectionNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(backlightNotification:) name:NSWindowDidResizeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(backlightNotification:) name:NSWindowDidBecomeKeyNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(backlightNotification:) name:NSWindowDidResizeNotification object:nil];
 
     return self;
 }
@@ -131,6 +148,11 @@ static AAABacklight *sharedPlugin;
     return [[NSUserDefaults standardUserDefaults] boolForKey:kAAALineBacklightStrokeEnabledKey];
 }
 
+- (BOOL)isRadiusEnabled
+{
+    return [[NSUserDefaults standardUserDefaults] boolForKey:kAAALineBacklightRadiusEnabledKey];
+}
+
 - (void)toggleEnableLineBacklight
 {
     [[NSUserDefaults standardUserDefaults] setBool:!self.isBacklightEnabled forKey:kAAAEnableLineBacklightKey];
@@ -153,6 +175,17 @@ static AAABacklight *sharedPlugin;
 
     _strokeControlMenuItem.state = (self.isStrokeEnabled) ? NSOnState : NSOffState;
     _currentBacklightView.strokeEnabled = self.isStrokeEnabled;
+    [_currentBacklightView setNeedsDisplay:YES];
+}
+
+- (void)toggleRadiusBacklight
+{
+    [[NSUserDefaults standardUserDefaults] setBool:!self.isRadiusEnabled forKey:kAAALineBacklightRadiusEnabledKey];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+
+    _radiusControlMenuItem.state = (self.isRadiusEnabled) ? NSOnState : NSOffState;
+    _currentBacklightView.radiusEnabled = self.isRadiusEnabled;
+
     [_currentBacklightView setNeedsDisplay:YES];
 }
 
@@ -181,22 +214,26 @@ static AAABacklight *sharedPlugin;
 
 #pragma mark - Notifications
 
-- (void)windowDidUpdate:(NSNotification *)notification
+- (void)backlightNotification:(NSNotification *)notification
 {
     id firstResponder = [[NSApp keyWindow] firstResponder];
+    if (![firstResponder isKindOfClass:NSClassFromString(@"DVTSourceTextView")]) return;
 
-    if ([firstResponder isKindOfClass:NSClassFromString(@"DVTSourceTextView")]) {
-        _textView = firstResponder;
-
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:kAAAEnableLineBacklightKey]) {
-            [self moveBacklightInTextView:firstResponder];
-        } else {
-            [_currentBacklightView removeFromSuperview];
-        }
-    }
+    [self updateBacklightViewWithTextView:firstResponder];
 }
 
 #pragma mark - Private methods
+
+- (void)updateBacklightViewWithTextView:(NSTextView *)textView
+{
+    _textView = textView;
+
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:kAAAEnableLineBacklightKey]) {
+        [self moveBacklightInTextView:textView];
+    } else {
+        [_currentBacklightView removeFromSuperview];
+    }
+}
 
 - (void)moveBacklightInTextView:(NSTextView *)textView
 {

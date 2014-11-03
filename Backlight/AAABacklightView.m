@@ -17,28 +17,38 @@ static CGFloat AAABacklightViewRadius = 4.0f;
 {
     [super drawRect:rect];
 
-    rect.size.width -= AAABacklightViewPadding * 2.0f;
-    rect.origin.x   += AAABacklightViewPadding;
-
     NSColor *color = (self.backlightColor) ?: [NSColor alternateSelectedControlColor];
     [[color colorWithAlphaComponent:0.2f] set];
 
-    NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:rect
-                                                         xRadius:AAABacklightViewRadius
-                                                         yRadius:AAABacklightViewRadius];
+    if (self.radiusEnabled) {
+        rect.size.width -= AAABacklightViewPadding * 2.0f;
+        rect.origin.x   += AAABacklightViewPadding;
 
-    [path fill];
+        NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:rect
+                                                             xRadius:AAABacklightViewRadius
+                                                             yRadius:AAABacklightViewRadius];
 
-    if (self.strokeEnabled) {
-        path.lineWidth = 0.5f;
-        [[color colorWithAlphaComponent:0.8f] set];
-        [path stroke];
+        [path fill];
+
+        if (self.strokeEnabled) {
+            path.lineWidth = 0.5f;
+            [[color colorWithAlphaComponent:0.8f] set];
+            [path stroke];
+        }
+    } else {
+        NSRectFillUsingOperation(rect, NSCompositeSourceOver);
     }
 }
 
 - (void)setBacklightColor:(NSColor *)backlightColor {
 	_backlightColor = backlightColor;
 	[self setNeedsDisplay:YES];
+}
+
+- (void)setRadiusEnabled:(BOOL)enabled
+{
+    _radiusEnabled = enabled;
+    [self setNeedsDisplay:YES];
 }
 
 @end
