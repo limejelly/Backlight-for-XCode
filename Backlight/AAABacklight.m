@@ -240,11 +240,10 @@ static AAABacklight *sharedPlugin;
 
     if (selectedRange.length != 0 && ![self settingForKey:kAAAAlwaysEnableLineBacklight]) return;
 
-    NSRect rectInScreen = [textView firstRectForCharacterRange:selectedRange actualRange:NULL];
-    NSRect rectInWindow = [textView.window convertRectFromScreen:rectInScreen];
-    NSRect rectInView   = [textView convertRect:rectInWindow fromView:nil];
+    NSRange glyphRange = [textView.layoutManager glyphRangeForCharacterRange:selectedRange actualCharacterRange:NULL];
+    NSRect glyphRect = [textView.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:textView.textContainer];
 
-    NSRect backlightRect = rectInView;
+    NSRect backlightRect = glyphRect;
     backlightRect.origin.x = 0;
     backlightRect.size.width = textView.bounds.size.width;
     self.currentBacklightView.frame = backlightRect;
