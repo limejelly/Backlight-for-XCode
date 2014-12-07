@@ -18,7 +18,11 @@ static CGFloat AAABacklightViewRadius = 4.0f;
     [super drawRect:rect];
 
     NSColor *color = (self.backlightColor) ?: [NSColor alternateSelectedControlColor];
-    [[color colorWithAlphaComponent:0.2f] set];
+    if (!self.backlightColor) {
+        [[color colorWithAlphaComponent:0.2f] set];
+    } else {
+        [color set];
+    }
 
     if (self.radiusEnabled) {
         rect.size.width -= AAABacklightViewPadding * 2.0f;

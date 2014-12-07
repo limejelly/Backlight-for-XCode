@@ -190,6 +190,7 @@ static AAABacklight *sharedPlugin;
 - (void)showColorPanel
 {
 	NSColorPanel *panel = [NSColorPanel sharedColorPanel];
+    panel.color = self.currentBacklightView.backlightColor;
     panel.target = self;
     panel.action = @selector(adjustColor:);
 	[panel orderFront:nil];
