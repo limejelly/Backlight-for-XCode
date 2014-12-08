@@ -9,6 +9,12 @@
 #import "AAABacklight.h"
 #import "AAABacklightView.h"
 
+typedef NS_ENUM(NSInteger, AAABacklightMode) {
+    AAABacklightModeNone,
+    AAABacklightModeUnderneath,
+    AAABacklightModeOverlay
+};
+
 static NSString *const kAAAEnableLineBacklightUnderneathMode = @"kAAAEnbaleLineBacklightUnderneathMode";
 // Keep the value for compatibility.
 static NSString *const kAAAEnableLineBacklightOverlayMode    = @"kAAAEnableLineBacklightKey";
@@ -22,6 +28,9 @@ static AAABacklight *sharedPlugin;
 @interface AAABacklight()
 @property (nonatomic, strong) NSBundle *bundle;
 @property (nonatomic, strong) AAABacklightView *currentBacklightView;
+@property (nonatomic, assign) AAABacklightMode currentMode;
+@property (nonatomic, assign) NSRange currentLineRange;
+@property (nonatomic, strong) NSColor *backlightColor;
 @property (nonatomic, strong) NSTextView *textView;
 // Hold the menu items because Underneath mode and Overlay mode are excluded options.
 // Under Unserneath mode, the stroke and round corner is not effective.
@@ -291,11 +300,7 @@ static AAABacklight *sharedPlugin;
 {
     self.textView = textView;
 
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:kAAAEnableLineBacklightOverlayMode]) {
-        [self moveBacklightInTextView:textView];
-    } else {
-        [self.currentBacklightView removeFromSuperview];
-    }
+    [self adjustBacklight];
 }
 
 - (void)moveBacklightInTextView:(NSTextView *)textView
@@ -304,39 +309,87 @@ static AAABacklight *sharedPlugin;
 
     NSRange selectedRange = [textView selectedRange];
     [self.currentBacklightView removeFromSuperview];
+    if ([textView.layoutManager temporaryAttribute:NSBackgroundColorAttributeName
+                                  atCharacterIndex:self.currentLineRange.location
+                                    effectiveRange:NULL]) {
+        [textView.layoutManager removeTemporaryAttribute:NSBackgroundColorAttributeName
+                                       forCharacterRange:self.currentLineRange];
+    }
 
     if (selectedRange.length != 0 && ![self settingForKey:kAAAAlwaysEnableLineBacklight]) return;
 
-    NSRange glyphRange = [textView.layoutManager glyphRangeForCharacterRange:selectedRange actualCharacterRange:NULL];
-    NSRect glyphRect = [textView.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:textView.textContainer];
+    switch (self.currentMode) {
+        case AAABacklightModeOverlay:
+        {
+            NSRange glyphRange = [textView.layoutManager glyphRangeForCharacterRange:selectedRange
+                                                                actualCharacterRange:NULL];
+            NSRect glyphRect = [textView.layoutManager boundingRectForGlyphRange:glyphRange
+                                                                 inTextContainer:textView.textContainer];
 
-    NSRect backlightRect = glyphRect;
-    backlightRect.origin.x = 0;
-    backlightRect.size.width = textView.bounds.size.width;
-    self.currentBacklightView.frame = backlightRect;
+            NSRect backlightRect = glyphRect;
+            backlightRect.origin.x = 0;
+            backlightRect.size.width = textView.bounds.size.width;
+            self.currentBacklightView.frame = backlightRect;
 
-    if (!self.currentBacklightView.superview) {
-        [textView addSubview:self.currentBacklightView];
+            if (!self.currentBacklightView.superview) {
+                [textView addSubview:self.currentBacklightView];
+            }
+        }
+            break;
+        case AAABacklightModeUnderneath:
+        {
+            self.currentLineRange = [textView.string lineRangeForRange:selectedRange];
+            [textView.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName
+                                                    value:self.backlightColor
+                                        forCharacterRange:self.currentLineRange];
+        }
+            break;
+        case AAABacklightModeNone:
+            break;
     }
 }
 
 - (void)createBacklight
 {
 	NSData *colorData = [[NSUserDefaults standardUserDefaults] dataForKey:kAAALineBacklightColor];
-    if (!colorData) return;
+    if (!colorData) {
+        // Make sure the backlightColor property got valid value.
+        self.backlightColor = [[NSColor alternateSelectedControlColor] colorWithAlphaComponent:0.2];
+        return;
+    }
 
-    NSColor *color = (NSColor *)[NSUnarchiver unarchiveObjectWithData:colorData];
-    self.currentBacklightView.backlightColor = color;
+    self.backlightColor = (NSColor *)[NSUnarchiver unarchiveObjectWithData:colorData];
+    if (!self.backlightColor) {
+        // fail-safe
+        self.backlightColor = [NSColor alternateSelectedControlColor];
+    }
+    self.currentLineRange = NSMakeRange(0, 0);
+    self.currentBacklightView.backlightColor = self.backlightColor;
 }
 
 - (void)adjustBacklight
 {
-    BOOL enabled = [self settingForKey:kAAAEnableLineBacklightOverlayMode];
+    if ([self settingForKey:kAAAEnableLineBacklightOverlayMode]) {
+        self.currentMode = AAABacklightModeOverlay;
+    } else if ([self settingForKey:kAAAEnableLineBacklightUnderneathMode]) {
+        self.currentMode = AAABacklightModeUnderneath;
+    } else {
+        self.currentMode = AAABacklightModeNone;
+    }
+    BOOL enabled = (self.currentMode != AAABacklightModeNone);
 
     if (enabled) {
         [self moveBacklightInTextView:self.textView];
     } else {
         [self.currentBacklightView removeFromSuperview];
+        if (self.textView) {
+            if ([self.textView.layoutManager temporaryAttribute:NSBackgroundColorAttributeName
+                                               atCharacterIndex:self.currentLineRange.location
+                                                 effectiveRange:NULL]) {
+                [self.textView.layoutManager removeTemporaryAttribute:NSBackgroundColorAttributeName
+                                                    forCharacterRange:self.currentLineRange];
+            }
+        }
     }
 }
 
