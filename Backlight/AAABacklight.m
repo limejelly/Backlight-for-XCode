@@ -160,6 +160,7 @@ static AAABacklight *sharedPlugin;
 - (void)toggleEnableLineBacklight:(NSMenuItem *)sender
 {
     [self toggleSettingForKey:kAAAEnableLineBacklight];
+    sender.state = [self stateForSettingForKey:kAAAEnableLineBacklight];
     [self adjustBacklight];
 }
 
