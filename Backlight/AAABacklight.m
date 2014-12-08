@@ -266,6 +266,17 @@ static AAABacklight *sharedPlugin;
 
     self.currentBacklightView.backlightColor = panel.color;
     self.backlightColor = panel.color;
+    if (self.textView) {
+        if ([self.textView.layoutManager temporaryAttribute:NSBackgroundColorAttributeName
+                                           atCharacterIndex:self.currentLineRange.location
+                                             effectiveRange:NULL]) {
+            [self.textView.layoutManager removeTemporaryAttribute:NSBackgroundColorAttributeName
+                                                forCharacterRange:self.currentLineRange];
+            [self.textView.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName
+                                                         value:self.backlightColor
+                                             forCharacterRange:self.currentLineRange];
+        }
+    }
 
     NSData *colorData = [NSArchiver archivedDataWithRootObject:panel.color];
     [[NSUserDefaults standardUserDefaults] setObject:colorData forKey:kAAALineBacklightColor];
