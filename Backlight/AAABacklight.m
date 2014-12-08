@@ -265,6 +265,7 @@ static AAABacklight *sharedPlugin;
     if (!panel.color && [[NSApp keyWindow] firstResponder] != self.textView) return;
 
     self.currentBacklightView.backlightColor = panel.color;
+    self.backlightColor = panel.color;
 
     NSData *colorData = [NSArchiver archivedDataWithRootObject:panel.color];
     [[NSUserDefaults standardUserDefaults] setObject:colorData forKey:kAAALineBacklightColor];
