@@ -195,6 +195,11 @@ static AAABacklight *sharedPlugin;
     panel.target = self;
     panel.action = @selector(adjustColor:);
 	[panel orderFront:nil];
+
+    // Observe the closing of the color panel so we can remove ourself from the target.
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(colorPanelWillClose:)
+                                                 name:NSWindowWillCloseNotification object:nil];
 }
 
 - (void)adjustColor:(id)sender
@@ -218,6 +223,19 @@ static AAABacklight *sharedPlugin;
     if (![firstResponder isKindOfClass:NSClassFromString(@"DVTSourceTextView")]) return;
 
     [self updateBacklightViewWithTextView:firstResponder];
+}
+
+- (void)colorPanelWillClose:(NSNotification *)notification
+{
+    NSColorPanel *panel = [NSColorPanel sharedColorPanel];
+    if (panel == notification.object) {
+        panel.target = nil;
+        panel.action = nil;
+
+        [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                        name:NSWindowWillCloseNotification
+                                                      object:nil];
+    }
 }
 
 #pragma mark - Private methods
