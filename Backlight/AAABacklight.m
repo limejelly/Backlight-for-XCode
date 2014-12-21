@@ -242,8 +242,6 @@ static AAABacklight *sharedPlugin;
     [self.currentBacklightView setNeedsDisplay:YES];
 }
 
-#pragma mark - Actions
-
 - (void)showColorPanel
 {
 	NSColorPanel *panel = [NSColorPanel sharedColorPanel];
