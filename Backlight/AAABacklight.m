@@ -141,8 +141,6 @@ static AAABacklight *sharedPlugin;
                                                  name:NSWindowDidResizeNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(backlightNotification:)
                                                  name:NSWindowDidBecomeKeyNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(backlightNotification:)
-                                                 name:NSWindowDidResizeNotification object:nil];
 
     return self;
 }
