@@ -141,6 +141,8 @@ static AAABacklight *sharedPlugin;
                                                  name:NSWindowDidResizeNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(backlightNotification:)
                                                  name:NSWindowDidBecomeKeyNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(endBacklightNotification:)
+                                                 name:NSTextDidEndEditingNotification object:nil];
 
     return self;
 }
@@ -287,6 +289,24 @@ static AAABacklight *sharedPlugin;
     if (![firstResponder isKindOfClass:NSClassFromString(@"DVTSourceTextView")]) return;
 
     [self updateBacklightViewWithTextView:firstResponder];
+}
+
+/**
+ * Respond to NSTextDidEndEditingNotification to remove the highlighted background color.
+ */
+- (void)endBacklightNotification:(NSNotification *)notification {
+    id firstResponder = [[NSApp keyWindow] firstResponder];
+    if (![firstResponder isKindOfClass:NSClassFromString(@"DVTSourceTextView")]) return;
+
+    if (self.textView != nil &&
+        self.textView == firstResponder &&
+        self.currentMode == AAABacklightModeUnderneath &&
+        [self.textView.layoutManager temporaryAttribute:NSBackgroundColorAttributeName
+                                       atCharacterIndex:self.currentLineRange.location
+                                         effectiveRange:NULL]) {
+            [self.textView.layoutManager removeTemporaryAttribute:NSBackgroundColorAttributeName
+                                                forCharacterRange:self.currentLineRange];
+        }
 }
 
 - (void)colorPanelWillClose:(NSNotification *)notification
