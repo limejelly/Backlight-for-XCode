@@ -141,8 +141,6 @@ static AAABacklight *sharedPlugin;
                                                  name:NSWindowDidResizeNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(backlightNotification:)
                                                  name:NSWindowDidBecomeKeyNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(endBacklightNotification:)
-                                                 name:NSTextDidEndEditingNotification object:nil];
 
     return self;
 }
@@ -326,6 +324,17 @@ static AAABacklight *sharedPlugin;
 
 - (void)updateBacklightViewWithTextView:(NSTextView *)textView
 {
+    // Before changing the textView's instance, remove the old one's highlight.
+    if (self.textView != textView &&
+        self.currentMode == AAABacklightModeUnderneath &&
+        [self.textView.layoutManager temporaryAttribute:NSBackgroundColorAttributeName
+                                       atCharacterIndex:self.currentLineRange.location
+                                         effectiveRange:NULL])
+    {
+        [self.textView.layoutManager removeTemporaryAttribute:NSBackgroundColorAttributeName
+                                            forCharacterRange:self.currentLineRange];
+    }
+
     self.textView = textView;
 
     [self adjustBacklight];
