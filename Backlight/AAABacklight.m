@@ -215,9 +215,22 @@ static AAABacklight *sharedPlugin;
 
 - (void)menuDidChange:(NSNotification *)notification
 {
+    // NOTE: This is just a workaround. We remove and re-add the observer.
+    // In 10.11 DP, the NSMenuDidChangeItemNotification fires everytime a new menu item is "adding",
+    // of course including the item we're trying to add now.
+    // It is supposed to be a system bug because "DidChange" should be notified AFTER the changes.
+    // Similar bug is reported in Xcode plug-in "FuzzyAutoComplete"'s issue, which is considered as
+    // a bug introduced by 10.10.2-dp:
+    //   https://github.com/FuzzyAutocomplete/FuzzyAutocompletePlugin/pull/57
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:NSMenuDidChangeItemNotification
+                                                  object:nil];
     if (![self hasMenuBuilt]) {
         [self buildMenus];
     }
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(menuDidChange:)
+                                                 name:NSMenuDidChangeItemNotification object:nil];
 }
 
 - (void)backlightNotification:(NSNotification *)notification
