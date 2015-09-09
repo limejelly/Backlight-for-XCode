@@ -22,6 +22,7 @@ static NSString *const kAAAAlwaysEnableLineBacklight         = @"kAAAAlwaysEnabl
 static NSString *const kAAALineBacklightColor                = @"kAAALineBacklightColorKey";
 static NSString *const kAAALineBacklightStrokeEnabled        = @"kAAALineBacklightStrokeEnabledKey";
 static NSString *const kAAALineBacklightRadiusEnabled        = @"kAAALineBacklightRadiusEnabledKey";
+static NSString *const kMenuItemTitlePrefix = @"Backlight";
 
 static AAABacklight *sharedPlugin;
 
@@ -61,80 +62,11 @@ static AAABacklight *sharedPlugin;
 
     self.bundle = plugin;
 
-    NSMenuItem *editMenuItem = [[NSApp mainMenu] itemWithTitle:@"Edit"];
-
-    if (!editMenuItem) return self;
-
-    NSMenu *backlightMenu = [[NSMenu alloc] initWithTitle:@"Backlight"];
-    backlightMenu.autoenablesItems = NO;
-    [[editMenuItem submenu] addItem:[NSMenuItem separatorItem]];
-
-    self.underneathModeMenuItem = [[NSMenuItem alloc] initWithTitle:@"Line backlight (Underneath Mode)"
-                                                             action:@selector(toggleEnableLineBacklightUnderneathMode:)
-                                                      keyEquivalent:@""];
-    self.underneathModeMenuItem.target = self;
-    // Show the "check" mark only when NOT being in "Overlay Mode" and the associated key is enabled.
-    self.underneathModeMenuItem.state = self.underneathModeMenuItem.enabled && [self settingForKey:kAAAEnableLineBacklightUnderneathMode];
-    [backlightMenu addItem:self.underneathModeMenuItem];
-
-    self.overlayModeMenuItem = [[NSMenuItem alloc] initWithTitle:@"Line backlight (Overlay Mode)"
-                                                          action:@selector(toggleEnableLineBacklightOverlayMode:)
-                                                   keyEquivalent:@""];
-    self.overlayModeMenuItem.target = self;
-    // Show the "check" mark only when NOT being in "Underneath Mode" and the associated key is enabled.
-    self.overlayModeMenuItem.state = self.overlayModeMenuItem.enabled && [self settingForKey:kAAAEnableLineBacklightOverlayMode];
-    [backlightMenu addItem:self.overlayModeMenuItem];
-
-    [backlightMenu addItem:({
-        NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:@"Always backlight"
-                                                          action:@selector(toggleAlwaysEnableBacklight:)
-                                                   keyEquivalent:@""];
-        menuItem.target = self;
-        menuItem.state = [self settingForKey:kAAAAlwaysEnableLineBacklight];
-        menuItem;
-    })];
-
-    [backlightMenu addItem:[NSMenuItem separatorItem]];
-
-    self.enableStrokeMenuItem = [[NSMenuItem alloc] initWithTitle:@"Enable stroke"
-                                                           action:@selector(toggleStrokeBacklight:)
-                                                    keyEquivalent:@""];
-    self.enableStrokeMenuItem.target = self;
-    self.enableStrokeMenuItem.enabled = [self settingForKey:kAAAEnableLineBacklightOverlayMode];
-    // Show the "check" mark only when being in "Overlay Mode" and the associated key is enabled.
-    self.enableStrokeMenuItem.state = self.enableStrokeMenuItem.enabled && [self settingForKey:kAAALineBacklightStrokeEnabled];
-    [backlightMenu addItem:self.enableStrokeMenuItem];
-
-    self.enableRadiusMenuItem = [[NSMenuItem alloc] initWithTitle:@"Enable round corners"
-                                                           action:@selector(toggleRadiusBacklight:)
-                                                    keyEquivalent:@""];
-    self.enableRadiusMenuItem.target = self;
-    self.enableRadiusMenuItem.enabled = [self settingForKey:kAAAEnableLineBacklightOverlayMode];
-    // Show the "check" mark only when being in "Overlay Mode" and the associated key is enabled.
-    self.enableRadiusMenuItem.state = self.enableStrokeMenuItem.enabled && [self settingForKey:kAAALineBacklightRadiusEnabled];
-    [backlightMenu addItem:self.enableRadiusMenuItem];
-
-    [backlightMenu addItem:[NSMenuItem separatorItem]];
-
-    [backlightMenu addItem:({
-        NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:@"Edit line backlight color"
-                                                          action:@selector(showColorPanel)
-                                                   keyEquivalent:@""];
-        menuItem.target = self;
-        menuItem;
-    })];
-
-    NSString *versionString = [[NSBundle bundleForClass:[self class]] objectForInfoDictionaryKey:@"CFBundleVersion"];
-    NSMenuItem *backlightMenuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"Backlight (%@)", versionString]
-                                                            action:nil
-                                                     keyEquivalent:@""];
-    backlightMenuItem.submenu = backlightMenu;
-
-    [[editMenuItem submenu] addItem:backlightMenuItem];
-
     [self createBacklight];
     [self adjustBacklight];
 
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(menuDidChange:)
+                                                 name:NSMenuDidChangeItemNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(backlightNotification:)
                                                  name:NSTextViewDidChangeSelectionNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(backlightNotification:)
@@ -281,6 +213,26 @@ static AAABacklight *sharedPlugin;
 
 #pragma mark - Notifications
 
+- (void)menuDidChange:(NSNotification *)notification
+{
+    // NOTE: This is just a workaround. We remove and re-add the observer.
+    // In 10.11 DP, the NSMenuDidChangeItemNotification fires everytime a new menu item is "adding",
+    // of course including the item we're trying to add now.
+    // It is supposed to be a system bug because "DidChange" should be notified AFTER the changes.
+    // Similar bug is reported in Xcode plug-in "FuzzyAutoComplete"'s issue, which is considered as
+    // a bug introduced by 10.10.2-dp:
+    //   https://github.com/FuzzyAutocomplete/FuzzyAutocompletePlugin/pull/57
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:NSMenuDidChangeItemNotification
+                                                  object:nil];
+    if (![self hasMenuBuilt]) {
+        [self buildMenus];
+    }
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(menuDidChange:)
+                                                 name:NSMenuDidChangeItemNotification object:nil];
+}
+
 - (void)backlightNotification:(NSNotification *)notification
 {
     id firstResponder = [[NSApp keyWindow] firstResponder];
@@ -303,6 +255,95 @@ static AAABacklight *sharedPlugin;
 }
 
 #pragma mark - Private methods
+
+- (BOOL)hasMenuBuilt
+{
+    NSMenuItem *editMenuItem = [[NSApp mainMenu] itemWithTitle:@"Edit"];
+    if (!editMenuItem) return NO;
+
+    BOOL result = NO;
+    for (NSMenuItem *menu in editMenuItem.submenu.itemArray) {
+        if ([menu.title hasPrefix:kMenuItemTitlePrefix]) {
+            result = YES;
+            break;
+        }
+    }
+    return result;
+}
+
+- (void)buildMenus
+{
+    NSMenuItem *editMenuItem = [[NSApp mainMenu] itemWithTitle:@"Edit"];
+
+    if (!editMenuItem) return;
+
+    NSMenu *backlightMenu = [[NSMenu alloc] initWithTitle:@"Backlight"];
+    backlightMenu.autoenablesItems = NO;
+    [[editMenuItem submenu] addItem:[NSMenuItem separatorItem]];
+
+    self.underneathModeMenuItem = [[NSMenuItem alloc] initWithTitle:@"Line backlight (Underneath Mode)"
+                                                             action:@selector(toggleEnableLineBacklightUnderneathMode:)
+                                                      keyEquivalent:@""];
+    self.underneathModeMenuItem.target = self;
+    // Show the "check" mark only when NOT being in "Overlay Mode" and the associated key is enabled.
+    self.underneathModeMenuItem.state = self.underneathModeMenuItem.enabled && [self settingForKey:kAAAEnableLineBacklightUnderneathMode];
+    [backlightMenu addItem:self.underneathModeMenuItem];
+
+    self.overlayModeMenuItem = [[NSMenuItem alloc] initWithTitle:@"Line backlight (Overlay Mode)"
+                                                          action:@selector(toggleEnableLineBacklightOverlayMode:)
+                                                   keyEquivalent:@""];
+    self.overlayModeMenuItem.target = self;
+    // Show the "check" mark only when NOT being in "Underneath Mode" and the associated key is enabled.
+    self.overlayModeMenuItem.state = self.overlayModeMenuItem.enabled && [self settingForKey:kAAAEnableLineBacklightOverlayMode];
+    [backlightMenu addItem:self.overlayModeMenuItem];
+
+    [backlightMenu addItem:({
+        NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:@"Always backlight"
+                                                          action:@selector(toggleAlwaysEnableBacklight:)
+                                                   keyEquivalent:@""];
+        menuItem.target = self;
+        menuItem.state = [self settingForKey:kAAAAlwaysEnableLineBacklight];
+        menuItem;
+    })];
+
+    [backlightMenu addItem:[NSMenuItem separatorItem]];
+
+    self.enableStrokeMenuItem = [[NSMenuItem alloc] initWithTitle:@"Enable stroke"
+                                                           action:@selector(toggleStrokeBacklight:)
+                                                    keyEquivalent:@""];
+    self.enableStrokeMenuItem.target = self;
+    self.enableStrokeMenuItem.enabled = [self settingForKey:kAAAEnableLineBacklightOverlayMode];
+    // Show the "check" mark only when being in "Overlay Mode" and the associated key is enabled.
+    self.enableStrokeMenuItem.state = self.enableStrokeMenuItem.enabled && [self settingForKey:kAAALineBacklightStrokeEnabled];
+    [backlightMenu addItem:self.enableStrokeMenuItem];
+
+    self.enableRadiusMenuItem = [[NSMenuItem alloc] initWithTitle:@"Enable round corners"
+                                                           action:@selector(toggleRadiusBacklight:)
+                                                    keyEquivalent:@""];
+    self.enableRadiusMenuItem.target = self;
+    self.enableRadiusMenuItem.enabled = [self settingForKey:kAAAEnableLineBacklightOverlayMode];
+    // Show the "check" mark only when being in "Overlay Mode" and the associated key is enabled.
+    self.enableRadiusMenuItem.state = self.enableStrokeMenuItem.enabled && [self settingForKey:kAAALineBacklightRadiusEnabled];
+    [backlightMenu addItem:self.enableRadiusMenuItem];
+
+    [backlightMenu addItem:[NSMenuItem separatorItem]];
+
+    [backlightMenu addItem:({
+        NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:@"Edit line backlight color"
+                                                          action:@selector(showColorPanel)
+                                                   keyEquivalent:@""];
+        menuItem.target = self;
+        menuItem;
+    })];
+
+    NSString *versionString = [[NSBundle bundleForClass:[self class]] objectForInfoDictionaryKey:@"CFBundleVersion"];
+    NSMenuItem *backlightMenuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"%@ (%@)", kMenuItemTitlePrefix, versionString]
+                                                               action:nil
+                                                        keyEquivalent:@""];
+    backlightMenuItem.submenu = backlightMenu;
+
+    [[editMenuItem submenu] addItem:backlightMenuItem];
+}
 
 - (void)updateBacklightViewWithTextView:(NSTextView *)textView
 {
