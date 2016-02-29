@@ -55,4 +55,14 @@ static CGFloat AAABacklightViewRadius = 4.0f;
     [self setNeedsDisplay:YES];
 }
 
+/** resolve the problem that the same row lost focus can not be editable under the overlay mode */
+- (NSView *)hitTest:(NSPoint)aPoint
+{
+    return nil;
+}
+
+- (BOOL)acceptsFirstResponder {
+    return NO;
+}
+
 @end
