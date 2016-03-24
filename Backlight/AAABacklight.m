@@ -194,12 +194,16 @@ static AAABacklight *sharedPlugin;
 
     self.currentBacklightView.backlightColor = panel.color;
     self.backlightColor = panel.color;
-    if (self.textView) {
+    if (self.textView &&
+        // keynote: avoid the crash From snippet
+        self.textView.superview != nil) {
         if ([self.textView.layoutManager temporaryAttribute:NSBackgroundColorAttributeName
                                            atCharacterIndex:self.currentLineRange.location
                                              effectiveRange:NULL]) {
+            
             [self.textView.layoutManager removeTemporaryAttribute:NSBackgroundColorAttributeName
                                                 forCharacterRange:self.currentLineRange];
+            
             [self.textView.layoutManager addTemporaryAttribute:NSBackgroundColorAttributeName
                                                          value:self.backlightColor
                                              forCharacterRange:self.currentLineRange];
@@ -236,8 +240,9 @@ static AAABacklight *sharedPlugin;
 - (void)backlightNotification:(NSNotification *)notification
 {
     id firstResponder = [[NSApp keyWindow] firstResponder];
+    
     if (![firstResponder isKindOfClass:NSClassFromString(@"DVTSourceTextView")]) return;
-
+    
     [self updateBacklightViewWithTextView:firstResponder];
 }
 
@@ -348,16 +353,19 @@ static AAABacklight *sharedPlugin;
 - (void)updateBacklightViewWithTextView:(NSTextView *)textView
 {
     // Before changing the textView's instance, remove the old one's highlight.
+    id tempAttribute = [self.textView.layoutManager temporaryAttribute:NSBackgroundColorAttributeName
+                                   atCharacterIndex:self.currentLineRange.location
+                                     effectiveRange:NULL];
+    
     if (self.textView != nil &&
         self.textView != textView &&
         self.currentMode == AAABacklightModeUnderneath &&
-        [self.textView.layoutManager temporaryAttribute:NSBackgroundColorAttributeName
-                                       atCharacterIndex:self.currentLineRange.location
-                                         effectiveRange:NULL])
-    {
-        [self.textView.layoutManager removeTemporaryAttribute:NSBackgroundColorAttributeName
-                                            forCharacterRange:self.currentLineRange];
-    }
+        tempAttribute != nil &&
+        // keynote: avoid the crash From snippet
+        self.textView.superview != nil) {
+            [self.textView.layoutManager removeTemporaryAttribute:NSBackgroundColorAttributeName
+                                                forCharacterRange:self.currentLineRange];
+        }
 
     self.textView = textView;
 
@@ -372,7 +380,9 @@ static AAABacklight *sharedPlugin;
     [self.currentBacklightView removeFromSuperview];
     if ([textView.layoutManager temporaryAttribute:NSBackgroundColorAttributeName
                                   atCharacterIndex:self.currentLineRange.location
-                                    effectiveRange:NULL]) {
+                                    effectiveRange:NULL] &&
+        // keynote: avoid the crash From snippet
+        self.textView.superview != nil) {
         [textView.layoutManager removeTemporaryAttribute:NSBackgroundColorAttributeName
                                        forCharacterRange:self.currentLineRange];
     }
@@ -443,7 +453,9 @@ static AAABacklight *sharedPlugin;
         [self moveBacklightInTextView:self.textView];
     } else {
         [self.currentBacklightView removeFromSuperview];
-        if (self.textView) {
+        if (self.textView &&
+            // keynote: avoid the crash From snippet
+            self.textView.superview != nil) {
             if ([self.textView.layoutManager temporaryAttribute:NSBackgroundColorAttributeName
                                                atCharacterIndex:self.currentLineRange.location
                                                  effectiveRange:NULL]) {
