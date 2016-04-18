@@ -1,4 +1,4 @@
-Backlight for XCode
+Backlight for Xcode
 =========
 
 Highlights the current editing line in Xcode
@@ -7,8 +7,8 @@ Highlights the current editing line in Xcode
 
 Installing:
 
-1. Build with XCode
-2. Restart XCode
+1. Build with Xcode
+2. Restart Xcode
 
 Usage:
 
